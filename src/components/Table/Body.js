@@ -2,8 +2,6 @@ import React from "react";
 import { connect } from "react-redux";
 import Row from "./Row";
 
-import { addRow } from "../../reducers";
-
 class Body extends React.Component {
   render() {
     const { rows, tableData } = this.props;
@@ -29,11 +27,9 @@ const mapStateToProps = ({ table }) => ({
   tableData: table
 });
 
-const mapDispatchToProps = {
-  addRow
-};
+
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  null
 )(Body);

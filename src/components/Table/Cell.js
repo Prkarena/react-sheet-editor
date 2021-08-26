@@ -4,9 +4,6 @@ import UncontrolledCell from "./CellUncontrolled";
 import SelectSurvey from "./SelectSurvey";
 
 import {
-  deleteColumn,
-  addRow,
-  deleteRow,
   updateCell
 } from "../../reducers";
 
@@ -56,9 +53,6 @@ class Cell extends React.Component {
 }
 
 const mapDispatchToProps = {
-  onAddRow: addRow,
-  onDeleteColumn: deleteColumn,
-  onDeleteRow: deleteRow,
   onCellChange: updateCell
 };
 

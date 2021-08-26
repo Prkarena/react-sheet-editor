@@ -4,3 +4,4 @@
 - Update Column name
 - Export file
 - CSV and XLSX supported
+- Redux 

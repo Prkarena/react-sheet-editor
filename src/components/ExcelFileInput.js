@@ -6,6 +6,9 @@ import { setTable } from "../reducers";
 class ExcelFileInput extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isFileImported: false,
+    };
     this.handleFile = this.handleFile.bind(this);
   }
   handleFile(file) {
@@ -20,104 +23,109 @@ class ExcelFileInput extends React.Component {
     };
     if (rABS) reader.readAsBinaryString(file);
     else reader.readAsArrayBuffer(file);
+    this.setState({ isFileImported: true });
   }
   render() {
-    return <DataInput tableData={this.props.tableData} handleFile={this.handleFile} />;
+    return (
+      <DataInput
+        isFileImported={this.state.isFileImported}
+        tableData={this.props.tableData}
+        handleFile={this.handleFile}
+      />
+    );
   }
 }
 
 const mapStateToProps = ({ table }) => ({
-    tableData: table
-  });
+  tableData: table,
+});
 
 const mapDispatchToProps = {
-  setTable
+  setTable,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ExcelFileInput);
+export default connect(mapStateToProps, mapDispatchToProps)(ExcelFileInput);
 
 const DataInput = (props) => {
-const tableData= useSelector(state => state.table.tableData);
-const headers= useSelector(state => state.table.headers);
+  const { isFileImported } = props;
+  const tableData = useSelector((state) => state.table.tableData);
+  const headers = useSelector((state) => state.table.headers);
   const fileInput = React.useRef(null);
 
   const handleChange = (e) => {
     const files = e.target.files;
     if (files && files[0]) props.handleFile(files[0]);
-  }
+  };
 
- const exportFile = (opt = 'xlsx') => {
-    const newHeader = headers.map(item => item.value);
+  const exportFile = (opt = "xlsx") => {
+    const newHeader = headers.map((item) => item.value);
     tableData[0] = newHeader;
     /* convert state to file */
     const ws = XLSX.utils.aoa_to_sheet(tableData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "SheetJS");
-    if(opt === 'xlsx') XLSX.writeFile(wb, "sheetjs.xlsx",  {bookType: 'xlsx'});
-    if(opt === 'csv') XLSX.writeFile(wb, "sheetjs.csv", {bookType: 'csv'});
-  }
-return (
+    if (opt === "xlsx")
+      XLSX.writeFile(wb, "sheetjs.xlsx", { bookType: "xlsx" });
+    if (opt === "csv") XLSX.writeFile(wb, "sheetjs.csv", { bookType: "csv" });
+  };
+  
+  return (
     <>
-    <button
+      <button
         style={{ marginLeft: 10 }}
         onClick={() => fileInput.current.click()}
-    >
+      >
         <i className="fas fa-upload" />
         &nbsp; Import File
-    </button>
-    <input
+      </button>
+      <input
         ref={fileInput}
         type="file"
         hidden
         accept={SheetJSFT}
         onChange={handleChange}
-    />
-    <button
-        style={{ marginLeft: 10 }}
-        onClick={() => exportFile('xlsx')}
-    >
-        <i className="fas fa-upload" />
-        &nbsp; Export XLSX
-    </button>
-    <button
-        style={{ marginLeft: 10 }}
-        onClick={() => exportFile('csv')}
-    >
-        <i className="fas fa-upload" />
-        &nbsp; Export CSV
-    </button>
+      />
+      {isFileImported ? (
+        <>
+          <button style={{ marginLeft: 10 }} onClick={() => exportFile("xlsx")}>
+            <i className="fas fa-upload" />
+            &nbsp; Export XLSX
+          </button>
+          <button style={{ marginLeft: 10 }} onClick={() => exportFile("csv")}>
+            <i className="fas fa-upload" />
+            &nbsp; Export CSV
+          </button>
+        </>
+      ) : (
+        <></>
+      )}
     </>
-);
-}
-
-
+  );
+};
 
 const SheetJSFT = [
   "xlsx",
-  "xlsb",
-  "xlsm",
-  "xls",
-  "xml",
   "csv",
-  "txt",
-  "ods",
-  "fods",
-  "uos",
-  "sylk",
-  "dif",
-  "dbf",
-  "prn",
-  "qpw",
-  "123",
-  "wb*",
-  "wq*",
-  "html",
-  "htm"
+  // "xlsb",
+  // "xlsm",
+  // "xls",
+  // "xml",
+  // "txt",
+  // "ods",
+  // "fods",
+  // "uos",
+  // "sylk",
+  // "dif",
+  // "dbf",
+  // "prn",
+  // "qpw",
+  // "123",
+  // "wb*",
+  // "wq*",
+  // "html",
+  // "htm"
 ]
-  .map(function(x) {
+  .map(function (x) {
     return "." + x;
   })
   .join(",");
